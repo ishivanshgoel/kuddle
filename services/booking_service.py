@@ -1,11 +1,15 @@
+from turtle import st
+from matplotlib.style import use
 from models.dance import Dance
 from models.gym import Gym
 from models.yoga import Yoga
 from models.booking import Booking
+from models.booking_response import BookingResponse
 from .user_service import UserService
+import datetime
 
 class BookingService:
-    def __init__(self, user_service):
+    def __init__(self, user_service, class_config = None):
         
         try:
             # to hold bookings data
@@ -25,9 +29,10 @@ class BookingService:
             self.__booking_id_counter = 1
             
             # dummy capacity values as 50 for each class
-            self.__yoga_classes = Yoga(50, 150)
-            self.__dance_classes = Dance(50, 160)
-            self.__gym_classes = Gym(50, 130)
+            start_time = datetime.datetime(2022,12,1,0,0).timestamp()
+            self.__yoga_classes = Yoga(50, start_time)
+            self.__dance_classes = Dance(50, start_time)
+            self.__gym_classes = Gym(50, start_time)
         except Exception as ex:
             raise ex
     
@@ -48,24 +53,24 @@ class BookingService:
     
     def cancel_class(self, username):
         # allow cancellation only if it is cancelled before 30 minutes of class start time
-        
-        # dummy current time
-        current_time = 140
-        if username in self._bookings:
-            if self.__bookings[username].start_time - current_time <= 30:
-                return True
-            else:
-                return False
-        else:
-            return False
+        current_time = datetime.datetime.now().timestamp()
+        # TODO
+        pass
+        # if username in self.__bookings:
+        #     if self.__bookings[username].start_time - current_time <= 30:
+                
+        #         del self.__bookings[username]
+        #         return True
+        #     else:
+        #         return False
+        # else:
+        #     return False
     
     def get_bookings(self):
         return self.__bookings
     
     def __register_in_yoga_class(self, username):
-        # TODO: authenticate user first
-        # TODO: set timestamp
-        timestamp = 123
+        timestamp = datetime.datetime.now().timestamp()
         
         # create new booking and register in yoga class
         booking = Booking(username, timestamp, "yoga")
@@ -75,18 +80,15 @@ class BookingService:
         
         if(capacity <= total_registrations):
             yoga_classes.add_to_waiting(username)
-        
         else:
             self.__yoga_classes.add_registartion()
             booking.set_booked()
         
         self.__bookings[username] = booking
-        return booking
+        return BookingResponse("yoga", booking.status)
     
     def __register_in_dance_class(self, username):
-        # TODO: authenticate user first
-        # TODO: set timestamp
-        timestamp = 123
+        timestamp = datetime.datetime.now().timestamp()
         
         # create new booking and register in yoga class
         booking = Booking(username, timestamp, "yoga")
@@ -102,12 +104,10 @@ class BookingService:
             booking.set_booked()
         
         self.__bookings[username] = booking
-        return booking
+        return BookingResponse("yoga", booking.status)
 
     def __register_in_gym_class(self, username):
-        # TODO: authenticate user first
-        # TODO: set timestamp
-        timestamp = 123
+        timestamp = datetime.datetime.now().timestamp()
         
         # create new booking and register in yoga class
         booking = Booking(username, timestamp, "yoga")
@@ -123,7 +123,7 @@ class BookingService:
             booking.set_booked()
         
         self.__bookings[username] = booking
-        return booking
+        return BookingResponse("yoga", booking.status)
     
     def _increment_booking_count(self):
         self.__booking_id_counter += 1

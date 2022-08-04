@@ -19,5 +19,7 @@ try:
     for booking in bookings.values():
         print(booking.status)
     
+    print(bs.cancel_class("shivansh-0"))
+    
 except Exception as ex:
     print(ex)
